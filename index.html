@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sambrama</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Inter", Arial, sans-serif;
+            background: url("bg.png") center/cover no-repeat fixed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            backdrop-filter: blur(3px);
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.9);
+            width: 90%;
+            max-width: 420px;
+            padding: 30px;
+            border-radius: 18px;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.15);
+            animation: fadeIn 0.6s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+            font-size: 26px;
+        }
+
+        label {
+            display: block;
+            margin: 12px 0 6px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            border-radius: 12px;
+            border: 1px solid #dcdcdc;
+            outline: none;
+            transition: 0.2s;
+            background: #fafafa;
+        }
+
+        input:focus, textarea:focus {
+            border-color: #7a9cff;
+            background: #ffffff;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 70px;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 18px;
+            background: #25D366;
+            color: white;
+            font-size: 18px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(37, 211, 102, 0.3);
+        }
+
+        button:hover {
+            transform: scale(1.03);
+            box-shadow: 0 8px 20px rgba(37, 211, 102, 0.4);
+        }
+
+        .price-tag {
+            background: #eef3ff;
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-weight: bold;
+            color: #3b4ba3;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        .confirmation {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 10px;
+            background: #e8ffe8;
+            color: #1b7d1b;
+            font-weight: 600;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <h2>Sambrama</h2>
+
+        <div class="price-tag">Price per unit: ₹100</div>
+
+        <label>Name</label>
+        <input type="text" id="customerName" placeholder="Enter your name" required>
+
+        <label>Contact Number</label>
+        <input type="text" id="customerPhone" placeholder="Enter 10-digit phone number" required>
+
+        <label>Address</label>
+        <textarea id="customerAddress" placeholder="Enter your address" required></textarea>
+
+        <label>Quantity</label>
+        <input type="number" id="qty" value="1" min="1" required onchange="updateTotal()">
+
+        <label>Total Price (₹)</label>
+        <input type="text" id="total" disabled>
+
+        <button onclick="submitOrder()">Place Order</button>
+
+        <div id="confirmationMessage" class="confirmation">
+            Order placed successfully! You will receive a WhatsApp confirmation shortly.
+        </div>
+    </div>
+
+    <script>
+        const pricePerUnit = 100;
+        const whatsappNumber = "8965231470";
+
+        function updateTotal() {
+            let qty = document.getElementById("qty").value;
+            document.getElementById("total").value = qty * pricePerUnit;
+        }
+
+        function submitOrder() {
+            let name = document.getElementById("customerName").value.trim();
+            let phone = document.getElementById("customerPhone").value.trim();
+            let address = document.getElementById("customerAddress").value.trim();
+            let qty = document.getElementById("qty").value;
+            let total = qty * pricePerUnit;
+
+            // Mandatory fields validation
+            if (!name || !phone || !address || qty < 1) {
+                alert("Please fill all fields correctly.");
+                return;
+            }
+
+            // Phone number check: exactly 10 digits
+            if (!/^[0-9]{10}$/.test(phone)) {
+                alert("Phone number must be exactly 10 digits.");
+                return;
+            }
+
+            let message =
+                `*New Order Received*\n` +
+                `Name: ${name}\n` +
+                `Phone: ${phone}\n` +
+                `Address: ${address}\n` +
+                `\nProduct: PN\n` +
+                `Quantity: ${qty}\n` +
+                `Total Price: ₹${total}`;
+
+            // Send to seller
+            let url = `https://wa.me/91${whatsappNumber}?text=${encodeURIComponent(message)}`;
+            window.open(url, "_blank");
+
+            // Show confirmation message to customer
+            document.getElementById("confirmationMessage").style.display = "block";
+        }
+
+        updateTotal();
+    </script>
+
+</body>
+</html>
